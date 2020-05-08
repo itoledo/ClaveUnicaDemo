@@ -65,22 +65,31 @@ namespace ClaveUnicaDemo.API.Controllers
                 string name = auth.Principal.FindFirstValue("name");
                 string email = auth.Principal.FindFirstValue("email");
 
-                // obtengamos el userinfo
-                using (var cl = new HttpClient())
+                if (!string.IsNullOrEmpty(auth.Properties.GetTokenValue("access_token")))
                 {
-                    cl.DefaultRequestHeaders.Authorization =
-                                        new AuthenticationHeaderValue("Bearer", auth.Properties.GetTokenValue("access_token"));
-                    var ret = await cl.PostAsync("https://www.claveunica.gob.cl/openid/userinfo/", new StringContent(string.Empty));
-                    ret.EnsureSuccessStatusCode();
-                    var json = await ret.Content.ReadAsStringAsync();
-                    _logger.LogInformation("respuesta userinfo: {0}", json);
-                    var ui = JsonConvert.DeserializeObject<UserInfo>(json);
-                    if (ui?.RolUnico != null)
-                        run = $"{ui.RolUnico.Numero}-{ui.RolUnico.DV}";
-                    if (ui?.Name != null)
-                        name = string.Join(" ", ui.Name.Nombres) + " " + string.Join(" ", ui.Name.Apellidos);
-                    if (!string.IsNullOrEmpty(ui?.Email))
-                        email = ui?.Email;
+                    try
+                    {
+                        // obtengamos el userinfo
+                        using (var cl = new HttpClient())
+                        {
+                            cl.DefaultRequestHeaders.Authorization =
+                                                new AuthenticationHeaderValue("Bearer", auth.Properties.GetTokenValue("access_token"));
+                            var ret = await cl.PostAsync("https://www.claveunica.gob.cl/openid/userinfo/", new StringContent(string.Empty));
+                            ret.EnsureSuccessStatusCode();
+                            var json = await ret.Content.ReadAsStringAsync();
+                            _logger.LogInformation("respuesta userinfo: {0}", json);
+                            var ui = JsonConvert.DeserializeObject<UserInfo>(json);
+                            if (ui?.RolUnico != null)
+                                run = $"{ui.RolUnico.Numero}-{ui.RolUnico.DV}";
+                            if (ui?.Name != null)
+                                name = string.Join(" ", ui.Name.Nombres) + " " + string.Join(" ", ui.Name.Apellidos);
+                            if (!string.IsNullOrEmpty(ui?.Email))
+                                email = ui?.Email;
+                        }
+                    } catch (Exception e)
+                    {
+                        _logger.LogError(e, "excepción al obtener UserInfo");
+                    }
                 }
 
                 var qs = new Dictionary<string, string>

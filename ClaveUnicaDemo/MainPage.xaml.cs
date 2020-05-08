@@ -29,9 +29,12 @@ namespace ClaveUnicaDemo
             try
             {
                 var r = await Xamarin.Essentials.WebAuthenticator.AuthenticateAsync(authUrl, callbackUrl);
-                RUN.Text = WebUtility.UrlDecode(r.Properties["run"]);
-                Nombres.Text = WebUtility.UrlDecode(r.Properties["name"]);
-                Email.Text = WebUtility.UrlDecode(r.Properties["email"]);
+                if (r.Properties.ContainsKey("run"))
+                    RUN.Text = WebUtility.UrlDecode(r.Properties["run"]);
+                if (r.Properties.ContainsKey("name"))
+                    Nombres.Text = WebUtility.UrlDecode(r.Properties["name"]);
+                if (r.Properties.ContainsKey("email"))
+                    Email.Text = WebUtility.UrlDecode(r.Properties["email"]);
             } catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine($"excepcion: {e}");
