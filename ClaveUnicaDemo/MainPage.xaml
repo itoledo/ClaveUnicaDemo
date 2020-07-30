@@ -19,6 +19,8 @@
 
         <Button Text="Login" Clicked="LoginClicked" HorizontalOptions="Center" Margin="0,0,0,20"/>
 
+        <Button Text="Cerrar sesión" Clicked="LogoutClicked" HorizontalOptions="Center" Margin="0,0,0,20"/>
+        
         <Grid Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />

@@ -20,11 +20,11 @@ namespace ClaveUnicaDemo
             InitializeComponent();
         }
 
+        Uri callbackUrl = new Uri("claveunicademo://");
+
         public async void LoginClicked(object sender, EventArgs args)
         {
-            var authenticationUrl = "https://claveunicademo.azurewebsites.net/auth/claveunica";
-            var authUrl = new Uri(authenticationUrl);
-            var callbackUrl = new Uri("claveunicademo://");
+            var authUrl = new Uri("https://claveunicademo.azurewebsites.net/auth/claveunica");
 
             try
             {
@@ -41,6 +41,24 @@ namespace ClaveUnicaDemo
                 await DisplayAlert("Excepción", e.ToString(), "Ok");
             }
             //var token = r?.AccessToken ?? r?.IdToken;
+        }
+
+        public async void LogoutClicked(object sender, EventArgs args)
+        {
+            var claveUnicaLogout = "https://claveunicademo.azurewebsites.net/auth/claveunicalogout";
+            var authUrl = new Uri($"https://accounts.claveunica.gob.cl/api/v1/accounts/app/logout?redirect={claveUnicaLogout}");
+
+            try
+            {
+                var r = await WebAuthenticator.AuthenticateAsync(authUrl, callbackUrl);
+                RUN.Text = Nombres.Text = Email.Text = string.Empty;
+                await DisplayAlert("Exito", "Sesión de Clave Única cerrada exitosamente.", "Ok");
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine($"excepcion: {e}");
+                await DisplayAlert("Error", "Ocurrió algún error al cerrar su sesión de Clave Única, por favor intente nuevamente.", "Ok");
+            }
         }
 
         public async void Logo_Tapped(object sender, EventArgs args)

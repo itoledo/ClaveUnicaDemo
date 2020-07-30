@@ -112,5 +112,16 @@ namespace ClaveUnicaDemo.API.Controllers
                 Request.HttpContext.Response.Redirect(url);
             }
         }
+
+        [HttpGet("claveunicalogout")]
+        public async Task Logout()
+        {
+            await Request.HttpContext.SignOutAsync("Cookies");
+            // Build the result url
+            var url = callbackScheme + "://";
+            await Request.HttpContext.SignOutAsync("OpenIdConnect");
+            //Redirect to final url
+            Request.HttpContext.Response.Redirect(url);
+        }
     }
 }
